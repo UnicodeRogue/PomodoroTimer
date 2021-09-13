@@ -14,32 +14,40 @@
     <header>
     </header>
 	  
-    <section>
-	    
-      <div id="pomodoro-container">
-       <div id="pomodoro-clock">
-         <div id="pomodoro-timer"></div>
-	       <div>
- 		 <input
-		    type="text"
-		    id="pomodoro-clock-task"
- 		    placeholder="My focus is: "
-		 />
-		</div>
-         <div id="pomodoro-clock-actions">
-           <button id="pomodoro-start">Start</button>
-           <button id="pomodoro-pause">Pause</button>
-           <button id="pomodoro-stop">Stop</button>
-         </div>
-       </div>
-       <div id="pomodoro-info">
-	 <h3>Your Sessions</h3>
-	 <ul id="pomodoro-sessions"></ul>
-       </div>
+<div id="pomodoro-container">
+      <div id="pomodoro-clock">
+        <div id="pomodoro-timer"></div>
+        <div>
+          <input type="text" id="pomodoro-clock-task" placeholder="I'm going to focus on..." />
+        </div>
+        <div id="pomodoro-clock-actions">
+          <button id="pomodoro-start">Start</button>
+          <button id="pomodoro-pause">Pause</button>
+          <button id="pomodoro-stop">Stop</button>
+        </div>
+        <div id="pomodoro-clock-title">
+          <span>
+            Changes made here will reflect at the start of the *next* session, not the current one
+          </span>
+        </div>
+        <div id="pomodoro-clock-actions">
+          <div class="pomodoro-input">
+            <label>Focus Duration</label>
+            <input name="input-work-duration" id="input-work-duration" type="number" />
+          </div>
+          <div class="pomodoro-input">
+            <label>Break Duration</label>
+            <input name="input-break-duration" id="input-break-duration" type="number" />
+          </div>
+        </div>
+        <div id="pomodoro-info">
+          <h3>Your Sessions </h3>
+          <ul id="pomodoro-sessions">
+          </ul>
+        </div>
       </div>
-      
-    </section>
-	
+    </div>
+    </div>
 
  <script src="timer.js"></script>
   
