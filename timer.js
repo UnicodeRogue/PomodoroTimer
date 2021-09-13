@@ -60,11 +60,20 @@ let timeSpentInCurrentSession = 0
 // in seconds = 5 mins;
 let breakSessionDuration = 300
 
+const progressBar = new ProgressBar.Circle('#pomodoro-timer', {
+  strokeWidth: 3,
+  text: {
+    value: '25:00',
+  },
+  trailColor: '#f8f4f8',
+})
+
 const toggleClock = (reset) => {
+  togglePlayPauseIcon(reset)
   if (reset) {
     stopClock()
   } else {
-    // new
+    console.log(isClockStopped)
     if (isClockStopped) {
       setUpdatedTimers()
       isClockStopped = false
@@ -83,6 +92,8 @@ const toggleClock = (reset) => {
       }, 1000)
       isClockRunning = true
     }
+    // new
+    showStopIcon()
   }
 }
 
@@ -98,10 +109,8 @@ const displayCurrentTimeLeftInSession = () => {
   }
   if (hours > 0) result += `${hours}:`
   result += `${addLeadingZeroes(minutes)}:${addLeadingZeroes(seconds)}`
-  pomodoroTimer.innerText = result.toString()
+  progressBar.text.innerText = result.toString()
 }
-
-pomodoroTimer.innerText = result
 
 const stopClock = () => {
   setUpdatedTimers()
@@ -157,3 +166,38 @@ const displaySessionLog = (type) => {
   li.appendChild(text)
   sessionsList.appendChild(li)
 }
+
+const togglePlayPauseIcon = (reset) => {
+  const playIcon = document.querySelector('#play-icon')
+  const pauseIcon = document.querySelector('#pause-icon')
+  if (reset) {
+    // when resetting -> always revert to play icon
+    if (playIcon.classList.contains('hidden')) {
+      playIcon.classList.remove('hidden')
+    }
+    if (!pauseIcon.classList.contains('hidden')) {
+      pauseIcon.classList.add('hidden')
+    }
+  } else {
+    playIcon.classList.toggle('hidden')
+    pauseIcon.classList.toggle('hidden')
+  }
+}
+
+const showStopIcon = () => {
+  const stopButton = document.querySelector('#pomodoro-stop')
+  stopButton.classList.remove('hidden')
+}
+
+const calculateSessionProgress = () => {
+  // calculate the completion rate of this session
+  const sessionDuration =
+    type === 'Work' ? workSessionDuration : breakSessionDuration
+  return (timeSpentInCurrentSession / sessionDuration) * 10
+}
+
+clockTimer = setInterval(() => {
+  stepDown()
+  displayCurrentTimeLeftInSession()
+  progressBar.set(calculateSessionProgress())
+}, 1000)
