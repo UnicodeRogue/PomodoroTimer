@@ -1,15 +1,44 @@
 const pomodoroTimer = document.querySelector('#pomodoro-timer')
 const startButton = document.querySelector('#pomodoro-start')
-const pauseButton = document.querySelector('#pomodoro-pause')
 const stopButton = document.querySelector('#pomodoro-stop')
+
+let updatedWorkSessionDuration
+let updatedBreakSessionDuration
+let workDurationInput = document.querySelector('#input-work-duration')
+// UPDATE WORK TIME
+  workDurationInput.addEventListener('input', () => {
+    updatedWorkSessionDuration = minuteToSeconds(workDurationInput.value)
+  })
+
+let breakDurationInput = document.querySelector('#input-break-duration')
+// UPDATE PAUSE TIME
+  breakDurationInput.addEventListener('input', () => {
+    updatedBreakSessionDuration = minuteToSeconds(breakDurationInput.value)
+  })
+
+const minuteToSeconds = (mins) => {
+  return mins * 60
+}
+
+const setUpdatedTimers = () => {
+  if (type === 'Work') {
+    currentTimeLeftInSession = updatedWorkSessionDuration
+      ? updatedWorkSessionDuration
+      : workSessionDuration
+    workSessionDuration = currentTimeLeftInSession
+  } else {
+    currentTimeLeftInSession = updatedBreakSessionDuration
+      ? updatedBreakSessionDuration
+      : breakSessionDuration
+    breakSessionDuration = currentTimeLeftInSession
+  }
+}
+
+workDurationInput.value = '25'
+breakDurationInput.value = '5'
 
 // START
 startButton.addEventListener('click', () => {
-  toggleClock()
-})
-
-// PAUSE
-pauseButton.addEventListener('click', () => {
   toggleClock()
 })
 
@@ -18,6 +47,7 @@ stopButton.addEventListener('click', () => {
   toggleClock(true)
 })
 
+let isClockStopped = true
 let isClockRunning = false
 let type = 'Work'
 let currentTaskLabel = document.querySelector('#pomodoro-clock-task')
@@ -33,21 +63,24 @@ let breakSessionDuration = 300
 const toggleClock = (reset) => {
   if (reset) {
     stopClock()
-    // STOP THE TIMER
-    
   } else {
+    // new
+    if (isClockStopped) {
+      setUpdatedTimers()
+      isClockStopped = false
+    }
     if (isClockRunning === true) {
-     clockTimer = setInterval(() => {
-      // decrease time left / increase time spent
-      stepDown()
-      displayCurrentTimeLeftInSession()
-      }, 1000)
-      
-      // PAUSE THE TIMER
+      // pause
       clearInterval(clockTimer)
+      // update icon to the play one
+      // set the vale of the button to start or pause
       isClockRunning = false
     } else {
-      // START THE TIMER
+      // start
+      clockTimer = setInterval(() => {
+        stepDown()
+        displayCurrentTimeLeftInSession()
+      }, 1000)
       isClockRunning = true
     }
   }
@@ -71,18 +104,15 @@ const displayCurrentTimeLeftInSession = () => {
 pomodoroTimer.innerText = result
 
 const stopClock = () => {
-  // 1) reset the timer we set
+  setUpdatedTimers()
   displaySessionLog(type)
   clearInterval(clockTimer)
-  // 2) update our variable to know that the timer is stopped
+  isClockStopped = true
   isClockRunning = false
-  // reset the time left in the session to its original state
   currentTimeLeftInSession = workSessionDuration
-  timeSpentInCurrentSession = 0
-  // update the timer displayed
   displayCurrentTimeLeftInSession()
   type = 'Work'
-  // could do it this way as a toggle: type = type === 'Work' ? 'Break' : 'Work'
+  timeSpentInCurrentSession = 0
 }
 
 const stepDown = () => {
@@ -104,6 +134,7 @@ const stepDown = () => {
       type = 'Work';
       if (currentTaskLabel.value === 'Break') {
         currentTaskLabel.value = workSessionLabel;
+        setUpdatedTimers();
       }
       currentTaskLabel.disabled = false;
       displaySessionLog('Break');
